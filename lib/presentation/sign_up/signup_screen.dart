@@ -96,14 +96,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               viewModel.isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          viewModel.signUp(
+                          final isSuccess = await viewModel.signUp(
                             _usernameController.text,
                             _nameController.text,
                             _passwordController.text,
                             _confirmPasswordController.text,
                           );
+                          if (isSuccess && mounted) {
+                            Navigator.pushReplacementNamed(context, '/signin');
+                          }
                         }
                       },
                       child: const Text('가입하기'),
@@ -111,7 +114,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               const SizedBox(height: 10),
 
-              // 에러 메시지
               if (viewModel.error != null)
                 Text(
                   viewModel.error!,

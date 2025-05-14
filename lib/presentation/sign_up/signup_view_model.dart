@@ -10,7 +10,7 @@ class SignUpViewModel extends ChangeNotifier {
 
   SignUpViewModel({required this.signUpUseCase});
 
-  Future<void> signUp(String username, String name, String password,
+  Future<bool> signUp(String username, String name, String password,
       String confirmPassword) async {
     isLoading = true;
     notifyListeners();
@@ -24,11 +24,12 @@ class SignUpViewModel extends ChangeNotifier {
 
     try {
       await signUpUseCase.execute(request);
+      return true;
     } catch (e) {
       error = e.toString();
+      isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 }
