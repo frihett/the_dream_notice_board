@@ -1,82 +1,65 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:the_dream_notice_board/data/datasources/auth_remote_datasource_impl.dart';
+import 'package:the_dream_notice_board/data/repositories/auth_repository_impl.dart';
+import 'package:the_dream_notice_board/data/storage/token_storage.dart';
+import 'package:the_dream_notice_board/domain/usecases/sign_in_usecase.dart';
+import 'package:the_dream_notice_board/domain/usecases/sign_up_usecase.dart';
+import 'package:the_dream_notice_board/presentation/home/home_screen.dart';
+import 'package:the_dream_notice_board/presentation/sign_in/signin_screen.dart';
+import 'package:the_dream_notice_board/presentation/sign_in/signin_view_model.dart';
+import 'package:the_dream_notice_board/presentation/sign_up/signup_view_model.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final initialScreen = await _getInitialScreen();
+
+  runApp(MyApp(initialScreen: initialScreen));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget initialScreen;
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+  MyApp({super.key, required this.initialScreen});
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-
-      _counter++;
-    });
-  }
+  final _dio = Dio();
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SignInViewModel(
+            signInUseCase: SignInUseCase(
+                repository: AuthRepositoryImpl(
+                    remoteDataSource: AuthRemoteDataSourceImpl(dio: _dio))),
+          ),
         ),
+        ChangeNotifierProvider(
+          create: (_) => SignUpViewModel(
+            signUpUseCase: SignUpUseCase(
+                repository: AuthRepositoryImpl(
+                    remoteDataSource: AuthRemoteDataSourceImpl(dio: _dio))),
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        routes: {
+          '/signin': (_) => const SignInScreen(),
+          '/home': (_) => const HomeScreen(),
+        },
+        home: initialScreen,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+Future<Widget> _getInitialScreen() async {
+  final token = await TokenStorage.getAccessToken();
+  if (token != null) {
+    return const HomeScreen();
+  } else {
+    return const SignInScreen();
   }
 }
