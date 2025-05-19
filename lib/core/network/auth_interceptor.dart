@@ -48,9 +48,12 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    print("요청 재시도1");
+
     // 401 Unauthorized 발생 시 토큰 갱신 후 요청 재시도
     if (err.response?.statusCode == 401 && !err.requestOptions.path.contains('/auth/refresh')) {
       final newAccessToken = await _refreshToken();
+      print("요청 재시도2");
 
       if (newAccessToken != null) {
         final cloneReq = err.requestOptions;
@@ -58,6 +61,7 @@ class AuthInterceptor extends Interceptor {
 
         try {
           final response = await dio.fetch(cloneReq);
+          print("요청 재시도3");
           return handler.resolve(response);
         } catch (e) {
           return handler.next(err);
