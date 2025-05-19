@@ -90,10 +90,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                                 style: ElevatedButton.styleFrom(),
                                 onPressed: () async {
                                   await vm.deleteBoard(vm.board!.id);
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/board',
-                                  );
+
+                                  Navigator.pop(context);
                                 },
                               ),
                             ],

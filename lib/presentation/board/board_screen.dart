@@ -36,6 +36,7 @@ class _BoardScreenState extends State<BoardScreen> {
               onPressed: () async {
                 await Navigator.pushNamed(context, '/write');
                 vm.fetchBoards();
+                vm.setCategory('ALL');
               },
             ),
           ],
@@ -63,6 +64,15 @@ class _BoardScreenState extends State<BoardScreen> {
                         title: Text(board.title),
                         subtitle:
                             Text('${board.category} • ${board.createdAt}'),
+                        onTap: () async{
+                          await Navigator.pushNamed(
+                            context,
+                            '/board_detail',
+                            arguments: board.id,
+                          );
+                          vm.fetchBoards();
+                          vm.setCategory('ALL');
+                        },
                       );
                     },
                   ),
