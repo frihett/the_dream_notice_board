@@ -5,7 +5,9 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:the_dream_notice_board/data/datasources/board_remote_datasource.dart';
 import 'package:the_dream_notice_board/data/models/CreateBoardRequest.dart';
+import 'package:the_dream_notice_board/data/models/board_detail.dart';
 import 'package:the_dream_notice_board/data/models/board_model.dart';
+import 'package:the_dream_notice_board/data/models/update_board_request.dart';
 
 class BoardRemoteDataSourceImpl implements BoardRemoteDataSource {
   final Dio dio;
@@ -48,9 +50,35 @@ class BoardRemoteDataSourceImpl implements BoardRemoteDataSource {
   }
 
   @override
+  Future<void> updateBoard(int id, UpdateBoardRequest request,
+      {File? image}) async {
+    final formData = FormData.fromMap({
+      'request': MultipartFile.fromString(
+        jsonEncode(request.toJson()),
+        contentType: MediaType('application', 'json'),
+      ),
+      if (image != null)
+        'file': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
+    });
+
+    await dio.patch('https://front-mission.bigs.or.kr/boards/$id',
+        data: formData);
+  }
+
+  @override
   Future<Map<String, String>> getCategories() async {
     final response =
         await dio.get('https://front-mission.bigs.or.kr/boards/categories');
     return Map<String, String>.from(response.data);
+  }
+
+  @override
+  Future<BoardDetail> getBoardDetail(int id) async {
+    final response =
+        await dio.get('https://front-mission.bigs.or.kr/boards/$id');
+    return BoardDetail.fromJson(response.data);
   }
 }
