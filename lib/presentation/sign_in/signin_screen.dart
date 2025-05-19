@@ -58,7 +58,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           );
                           if (viewModel.error == null) {
                             if (!mounted) return;
-                            Navigator.pushReplacementNamed(context, '/home');
+                            Navigator.pushReplacementNamed(context, '/main');
                           }
                         }
                       },

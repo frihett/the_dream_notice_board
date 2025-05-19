@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.seungchan.the_dream_notice_board"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
