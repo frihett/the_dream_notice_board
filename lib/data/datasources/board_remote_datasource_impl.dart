@@ -17,6 +17,7 @@ class BoardRemoteDataSourceImpl implements BoardRemoteDataSource {
   // 글 조회
   @override
   Future<List<Board>> getBoards({int page = 0, int size = 10}) async {
+    print("$page 페이지 호출");
     final response = await dio.get(
       'https://front-mission.bigs.or.kr/boards',
       queryParameters: {'page': page, 'size': size},
