@@ -15,4 +15,6 @@ abstract class BoardRepository {
   Future<BoardDetail> getBoardDetail(int id);
 
   Future<void> updateBoard(int id, UpdateBoardRequest request, {File? image});
+
+  Future<void> deleteBoard(int id);
 }

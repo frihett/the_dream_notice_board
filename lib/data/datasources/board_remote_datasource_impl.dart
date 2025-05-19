@@ -81,4 +81,9 @@ class BoardRemoteDataSourceImpl implements BoardRemoteDataSource {
         await dio.get('https://front-mission.bigs.or.kr/boards/$id');
     return BoardDetail.fromJson(response.data);
   }
+
+  @override
+  Future<void> deleteBoard(int id) async {
+    await dio.delete('https://front-mission.bigs.or.kr/boards/$id');
+  }
 }

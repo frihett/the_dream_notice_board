@@ -35,4 +35,9 @@ class BoardRepositoryImpl implements BoardRepository {
   Future<void> updateBoard(int id, UpdateBoardRequest request, {File? image}) {
     return remoteDataSource.updateBoard(id, request, image: image);
   }
+
+  @override
+  Future<void> deleteBoard(int id) {
+    return remoteDataSource.deleteBoard(id);
+  }
 }
