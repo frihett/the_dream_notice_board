@@ -19,4 +19,9 @@ class BoardRepositoryImpl implements BoardRepository {
   Future<int> createBoard(CreateBoardRequest request, {File? image}) {
     return remoteDataSource.createBoard(request, image: image);
   }
+
+  @override
+  Future<Map<String, String>> getCategories() {
+    return remoteDataSource.getCategories();
+  }
 }

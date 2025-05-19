@@ -46,4 +46,11 @@ class BoardRemoteDataSourceImpl implements BoardRemoteDataSource {
 
     return response.data['id'];
   }
+
+  @override
+  Future<Map<String, String>> getCategories() async {
+    final response =
+        await dio.get('https://front-mission.bigs.or.kr/boards/categories');
+    return Map<String, String>.from(response.data);
+  }
 }
