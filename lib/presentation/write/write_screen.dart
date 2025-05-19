@@ -20,6 +20,12 @@ class _WriteScreenState extends State<WriteScreen> {
   File? _selectedImage;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => context.read<WriteViewModel>().fetchCategories());
+  }
+
+  @override
   Widget build(BuildContext context) {
     final vm = context.watch<WriteViewModel>();
 
@@ -32,12 +38,12 @@ class _WriteScreenState extends State<WriteScreen> {
           child: Column(
             children: [
               DropdownButtonFormField<String>(
-                value: _category,
-                items: ['NOTICE', 'FREE', 'QNA', 'ETC']
-                    .map((cat) => DropdownMenuItem(
-                  value: cat,
-                  child: Text(cat),
-                ))
+                value: vm.selectedCategory,
+                items: vm.categories.entries
+                    .map((e) => DropdownMenuItem(
+                          value: e.key,
+                          child: Text(e.value),
+                        ))
                     .toList(),
                 onChanged: (val) => setState(() => _category = val!),
                 decoration: const InputDecoration(labelText: '카테고리'),
@@ -55,7 +61,8 @@ class _WriteScreenState extends State<WriteScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  final picked = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
                   if (picked != null) {
                     setState(() => _selectedImage = File(picked.path));
                   }
@@ -66,22 +73,21 @@ class _WriteScreenState extends State<WriteScreen> {
               vm.isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final id = await vm.createBoard(
-                      _titleController.text,
-                      _contentController.text,
-                      _category,
-                      image: _selectedImage,
-                    );
-                    if (id != null && context.mounted) {
-
-                      Navigator.pop(context);
-                    }
-                  }
-                },
-                child: const Text('작성 완료'),
-              ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final id = await vm.createBoard(
+                            _titleController.text,
+                            _contentController.text,
+                            _category,
+                            image: _selectedImage,
+                          );
+                          if (id != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        }
+                      },
+                      child: const Text('작성 완료'),
+                    ),
               if (vm.error != null)
                 Text(vm.error!, style: const TextStyle(color: Colors.red))
             ],
