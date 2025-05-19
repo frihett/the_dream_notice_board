@@ -9,15 +9,6 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('홈 화면'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await TokenStorage.clear();
-              Navigator.pushReplacementNamed(context, '/signin');
-            },
-          ),
-        ],
       ),
       body: const Center(
         child: Text('환영합니다! 홈 화면입니다.'),
